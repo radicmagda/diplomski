@@ -6,6 +6,7 @@
 # ------------------------------------------------------------------------
 # Modified from https://github.com/open-mmlab/mmcv/blob/master/mmcv/fileio/file_client.py  # noqa: E501
 from abc import ABCMeta, abstractmethod
+import os
 
 
 class BaseStorageBackend(metaclass=ABCMeta):
@@ -111,6 +112,8 @@ class LmdbBackend(BaseStorageBackend):
         except ImportError:
             raise ImportError('Please install lmdb to enable LmdbBackend.')
 
+        base_path = os.getcwd()
+
         if isinstance(client_keys, str):
             client_keys = [client_keys]
 
@@ -126,9 +129,9 @@ class LmdbBackend(BaseStorageBackend):
 
         for client, path in zip(client_keys, self.db_paths):
             self._client[client] = lmdb.open(
-                path,
-                readonly=readonly,
-                lock=lock,
+                os.path.join(base_path, path),
+                readonly=True,
+                lock=False,
                 readahead=readahead,
                 map_size=8*1024*10485760,
                 # max_readers=1,
