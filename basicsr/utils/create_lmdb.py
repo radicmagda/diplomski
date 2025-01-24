@@ -50,6 +50,9 @@ def create_lmdb_for_reds():
 
 
 def create_lmdb_for_gopro():
+    '''
+    megi docstringg
+    '''
     folder_path = './datasets/GoPro/train/blur_crops'
     lmdb_path = './datasets/GoPro/train/blur_crops.lmdb'
 

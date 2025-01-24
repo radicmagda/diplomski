@@ -96,8 +96,8 @@ class NAFNet(nn.Module):
         self.ups = nn.ModuleList()
         self.downs = nn.ModuleList()
 
-        chan = width
-        for num in enc_blk_nums:
+        chan = width # 32 il 64
+        for num in enc_blk_nums: # 1,1,1,28
             self.encoders.append(
                 nn.Sequential(
                     *[NAFBlock(chan) for _ in range(num)]

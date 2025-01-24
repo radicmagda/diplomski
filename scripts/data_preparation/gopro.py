@@ -13,9 +13,57 @@ from os import path as osp
 from tqdm import tqdm
 
 from basicsr.utils import scandir
-from basicsr.utils.create_lmdb import create_lmdb_for_gopro
+#from basicsr.utils.create_lmdb import create_lmdb_for_gopro
+from basicsr.utils.lmdb_util import make_lmdb_from_imgs
 
-def main():
+
+def prepare_keys(folder_path, suffix='png'):
+    """Prepare image path list and keys for DIV2K dataset.
+
+    Args:
+        folder_path (str): Folder path.
+
+    Returns:
+        list[str]: Image path list.
+        list[str]: Key list.
+    """
+    print('Reading image path list ...')
+    img_path_list = sorted(
+        list(scandir(folder_path, suffix=suffix, recursive=False)))
+    keys = [img_path.split('.{}'.format(suffix))[0] for img_path in sorted(img_path_list)]
+
+    return img_path_list, keys
+
+
+def create_lmdb_for_gopro():
+    '''
+    megi docstringg
+    '''
+    folder_path = './datasets/GoPro/train/blur_crops'
+    lmdb_path = './datasets/GoPro/train/blur_crops.lmdb'
+
+    img_path_list, keys = prepare_keys(folder_path, 'png')
+    make_lmdb_from_imgs(folder_path, lmdb_path, img_path_list, keys)
+
+    folder_path = './datasets/GoPro/train/sharp_crops'
+    lmdb_path = './datasets/GoPro/train/sharp_crops.lmdb'
+
+    img_path_list, keys = prepare_keys(folder_path, 'png')
+    make_lmdb_from_imgs(folder_path, lmdb_path, img_path_list, keys)
+
+    # folder_path = './datasets/GoPro/test/target'
+    # lmdb_path = './datasets/GoPro/test/target.lmdb'
+
+    # img_path_list, keys = prepare_keys(folder_path, 'png')
+    # make_lmdb_from_imgs(folder_path, lmdb_path, img_path_list, keys)
+
+    # folder_path = './datasets/GoPro/test/input'
+    # lmdb_path = './datasets/GoPro/test/input.lmdb'
+
+    # img_path_list, keys = prepare_keys(folder_path, 'png')
+    # make_lmdb_from_imgs(folder_path, lmdb_path, img_path_list, keys)
+
+def create_fragments():
     opt = {}
     opt['n_thread'] = 20
     opt['compression_level'] = 3
@@ -34,7 +82,6 @@ def main():
     opt['thresh_size'] = 0
     extract_subimages(opt)
 
-    create_lmdb_for_gopro()
 
 
 def extract_subimages(opt):
@@ -126,4 +173,5 @@ def worker(path, opt):
 
 
 if __name__ == '__main__':
-    main()
+    #create_fragments()
+    create_lmdb_for_gopro()
