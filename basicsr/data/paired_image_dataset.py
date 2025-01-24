@@ -78,7 +78,9 @@ class PairedImageDataset(data.Dataset):
     def __getitem__(self, index):
         if self.file_client is None:
             self.file_client = FileClient(
-                self.io_backend_opt.pop('type'), **self.io_backend_opt)
+              self.io_backend_opt['type'],  # Access the 'type' key directly
+              **{k: v for k, v in self.io_backend_opt.items() if k != 'type'}  # Unpack the rest of the keys except 'type'
+          )
 
         scale = self.opt['scale']
 
