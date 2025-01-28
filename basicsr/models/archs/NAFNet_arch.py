@@ -63,25 +63,25 @@ class NAFBlock(nn.Module):
     def forward(self, inp):
         x = inp
 
-        x = self.norm1(x)
+        x = self.norm1(x) # LayerNorm
 
-        x = self.conv1(x)
-        x = self.conv2(x)
-        x = self.sg(x)
-        x = x * self.sca(x)
-        x = self.conv3(x)
+        x = self.conv1(x) # pointwise
+        x = self.conv2(x) # depthwise
+        x = self.sg(x) # simple gate
+        x = x * self.sca(x) # simplified channel attention
+        x = self.conv3(x) # pointwise
 
-        x = self.dropout1(x)
+        x = self.dropout1(x) # dropout
 
-        y = inp + x * self.beta
+        y = inp + x * self.beta # residual
 
-        x = self.conv4(self.norm2(y))
-        x = self.sg(x)
-        x = self.conv5(x)
+        x = self.conv4(self.norm2(y)) # layer norm + pointwise
+        x = self.sg(x) # simple gate
+        x = self.conv5(x) # pointwise
 
-        x = self.dropout2(x)
+        x = self.dropout2(x) # dropout
 
-        return y + x * self.gamma
+        return y + x * self.gamma # residual
 
 
 class NAFNet(nn.Module):
