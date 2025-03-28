@@ -12,6 +12,11 @@ from multiprocessing import Pool
 from os import path as osp
 from tqdm import tqdm
 
+project_path = os.getcwd()
+print(project_path)
+if project_path not in sys.path:
+  sys.path.append(project_path)
+
 from basicsr.utils import scandir
 #from basicsr.utils.create_lmdb import create_lmdb_for_gopro
 from basicsr.utils.lmdb_util import make_lmdb_from_imgs
