@@ -39,7 +39,7 @@ datasets:
     dataroot_gt: ./datasets/GoPro/test/target.lmdb
     dataroot_lq: ./datasets/GoPro/test/input.lmdb
     io_backend:
-      type: lmdb
+      type: hard-disk
 
 
 network_g:

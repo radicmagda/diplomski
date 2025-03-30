@@ -179,4 +179,4 @@ def worker(path, opt):
 
 if __name__ == '__main__':
     create_fragments()
-    create_lmdb_for_gopro()
+    #create_lmdb_for_gopro()
