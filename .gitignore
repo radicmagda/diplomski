@@ -4,5 +4,5 @@ experiments
 logs/
 *results*
 *__pycache__*
-datasets
+datasets/GoPro/
 basicsr.egg-info
