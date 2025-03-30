@@ -1,5 +1,6 @@
 pip install -r requirements.txt
 
+mkdir ./datasets/GoPro
 gdown --id 1zgALzrLCC_tcXKu_iHQTHukKUVT1aodI -O train_dataset.zip
 unzip train_dataset.zip -d train_dataset/
 rm train_dataset.zip
