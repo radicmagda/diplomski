@@ -1,4 +1,4 @@
-pip install -r requirements.txt
+#pip install -r requirements.txt unnecessary since added to Dockerfile
 
 mkdir ./datasets/GoPro
 gdown --id 1zgALzrLCC_tcXKu_iHQTHukKUVT1aodI -O train_dataset.zip
