@@ -20,7 +20,7 @@ datasets:
 
     filename_tmpl: '{}'
     io_backend:
-      type: hard-disk
+      type: disk
 
     gt_size: 256
     use_flip: true
