@@ -15,12 +15,12 @@ datasets:
   train:
     name: gopro-train
     type: PairedImageDataset
-    dataroot_gt: ./datasets/GoPro/train/sharp_crops.lmdb
-    dataroot_lq: ./datasets/GoPro/train/blur_crops.lmdb
+    dataroot_gt: ./datasets/GoPro/train/sharp_crops
+    dataroot_lq: ./datasets/GoPro/train/blur_crops
 
     filename_tmpl: '{}'
     io_backend:
-      type: lmdb
+      type: hard-disk
 
     gt_size: 256
     use_flip: true
@@ -39,7 +39,7 @@ datasets:
     dataroot_gt: ./datasets/GoPro/test/target.lmdb
     dataroot_lq: ./datasets/GoPro/test/input.lmdb
     io_backend:
-      type: hard-disk
+      type: lmdb
 
 
 network_g:
