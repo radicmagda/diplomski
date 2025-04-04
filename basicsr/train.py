@@ -12,6 +12,13 @@ import random
 import time
 import torch
 from os import path as osp
+import sys
+import os
+
+project_path = os.getcwd()
+print(project_path)
+if project_path not in sys.path:
+    sys.path.append(project_path)
 
 from basicsr.data import create_dataloader, create_dataset
 from basicsr.data.data_sampler import EnlargedSampler
