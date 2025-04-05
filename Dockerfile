@@ -1,5 +1,5 @@
 # Base image with Python + CUDA + PyTorch
-FROM pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime
+FROM pytorch/pytorch:1.13.1-cuda11.7-cudnn8-runtime
 
 # Set working directory inside the container
 WORKDIR /workspace
