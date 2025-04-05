@@ -1,10 +1,13 @@
 # Base image with Python + CUDA + PyTorch
 FROM pytorch/pytorch:1.13.1-cuda11.6-cudnn8-devel
 
-# Install necessary dependencies
+# Install system dependencies, including glib
 RUN apt-get update && apt-get install -y \
-    unzip \
-    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    libgthread-2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 # Set working directory inside the container
 WORKDIR /workspace
