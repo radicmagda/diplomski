@@ -7,7 +7,6 @@ RUN apt-get update && apt-get install -y \
     libsm6 \
     libxext6 \
     libxrender1 \
-    libgthread-2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 # Set working directory inside the container
 WORKDIR /workspace
