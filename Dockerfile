@@ -17,5 +17,9 @@ WORKDIR /workspace
 COPY requirements.txt . 
 RUN pip install --no-cache-dir -r requirements.txt
 
+#--------------- uncomment if in need of regular bash docker shell
 # Default command: open bash shell
-CMD ["/bin/bash"]
+#CMD ["/bin/bash"]
+
+# Start the Python training script by default
+CMD ["python", "basicsr/train.py", "-opt", "options/train/GoPro/NAFNet-width32.yml"]
