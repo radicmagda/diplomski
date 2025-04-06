@@ -16,3 +16,5 @@ mv test_dataset/GoPro/test datasets/GoPro
 rm -rf test_dataset
 
 python scripts/data_preparation/gopro.py
+rm -rf datasets/GoPro/train/input
+rm -rf datasets/GoPro/train/target
