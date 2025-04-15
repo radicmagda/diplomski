@@ -68,20 +68,20 @@ def create_lmdb_for_gopro():
     #img_path_list, keys = prepare_keys(folder_path, 'png')
     #make_lmdb_from_imgs(folder_path, lmdb_path, img_path_list, keys)
 
-def create_fragments():
+def create_fragments(dataset_name:str):
     opt = {}
     opt['n_thread'] = 20
     opt['compression_level'] = 3
 
-    opt['input_folder'] = './datasets/GoPro/train/input'
-    opt['save_folder'] = './datasets/GoPro/train/blur_crops'
+    opt['input_folder'] = f'./datasets/{dataset_name}/train/input'
+    opt['save_folder'] = f'./datasets/{dataset_name}/train/blur_crops'
     opt['crop_size'] = 512
     opt['step'] = 256
     opt['thresh_size'] = 0
     extract_subimages(opt)
 
-    opt['input_folder'] = './datasets/GoPro/train/target'
-    opt['save_folder'] = './datasets/GoPro/train/sharp_crops'
+    opt['input_folder'] = f'./datasets/{dataset_name}/train/target'
+    opt['save_folder'] = f'./datasets/{dataset_name}/train/sharp_crops'
     opt['crop_size'] = 512
     opt['step'] = 256
     opt['thresh_size'] = 0
@@ -178,5 +178,5 @@ def worker(path, opt):
 
 
 if __name__ == '__main__':
-    create_fragments()
+    create_fragments(dataset_name=sys.argv[1])
     #create_lmdb_for_gopro()
