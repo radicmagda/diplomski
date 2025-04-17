@@ -66,7 +66,7 @@ train:
   scheduler:
     type: TrueCosineAnnealingLR
     T_max: 1600000 # 200000 originally, increase 8x due to 8x smaller batch size
-    eta_min: !!float 1e-5 # 1e-7 originally
+    eta_min: !!float 1e-4 # 1e-7 originally
 
   total_iter: 1600000 # 200000 originally, increase 8x due to 8x smaller batch size
   warmup_iter: -1 # no warm up
@@ -79,7 +79,7 @@ train:
 
 # validation settings
 val:
-  val_freq: !!float 1e4
+  val_freq: !!float 5e4
   save_img: false
 
 
