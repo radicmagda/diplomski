@@ -29,7 +29,7 @@ datasets:
     # data loader
     use_shuffle: true
     num_worker_per_gpu: 4
-    batch_size_per_gpu: 16
+    batch_size_per_gpu: 8
     dataset_enlarge_ratio: 1
     prefetch_mode: ~
 
@@ -65,10 +65,10 @@ train:
 
   scheduler:
     type: TrueCosineAnnealingLR
-    T_max: 400000 # 200000 originally, increase 2x due to smaller batch size
+    T_max: 800000 # 200000 originally, increase 4x due to 4x smaller batch size
     eta_min: !!float 1e-5 # 1e-7 originally
 
-  total_iter: 400000 # 200000 originally, increase 2x due to 2x smaller batch size
+  total_iter: 800000 # 200000 originally, increase 2x due to 4x smaller batch size
   warmup_iter: -1 # no warm up
 
   # losses
