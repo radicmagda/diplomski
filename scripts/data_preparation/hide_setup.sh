@@ -41,5 +41,5 @@ rm -r ./HIDE_dataset
 
 # ========== Create Crops for Training ==========
 python scripts/data_preparation/make_crops.py HIDE
-#rm -rf datasets/HIDE/train/input   # optional, remove "whole" training images
-#rm -rf datasets/HIDE/train/target  # optional, remove "whole" training images
+rm -rf datasets/HIDE/train/input   # optional, remove "whole" training images
+rm -rf datasets/HIDE/train/target  # optional, remove "whole" training images
