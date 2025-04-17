@@ -5,7 +5,7 @@
 # Copyright 2018-2020 BasicSR Authors
 # ------------------------------------------------------------------------
 # general settings
-name: NAFNet-GoPro-width32
+name: NAFNet-GoPro-width32-v2
 model_type: ImageRestorationModel
 scale: 1
 num_gpu: 1
@@ -29,7 +29,7 @@ datasets:
     # data loader
     use_shuffle: true
     num_worker_per_gpu: 4
-    batch_size_per_gpu: 4
+    batch_size_per_gpu: 32
     dataset_enlarge_ratio: 1
     prefetch_mode: ~
 
@@ -61,14 +61,14 @@ train:
     type: AdamW
     lr: !!float 1e-3
     weight_decay: !!float 1e-3
-    betas: [0.9, 0.9]
+    betas: [0.9, 0.999]
 
   scheduler:
     type: TrueCosineAnnealingLR
-    T_max: 1700000 # 200000 originally, but had to incresae 8x due to 8x smaller batch size plus added extra 100 k    
-    eta_min: !!float 1e-7
+    T_max: 200000 # 200000 originally
+    eta_min: !!float 1e-5 # 1e-7 originally
 
-  total_iter: 1700000 # 200000 originally, but had to incresae 8x due to 8x smaller batch size plus added extra 100 k
+  total_iter: 200000 # 200000 originally
   warmup_iter: -1 # no warm up
 
   # losses
