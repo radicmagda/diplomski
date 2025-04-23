@@ -36,8 +36,8 @@ datasets:
   val:
     name: hide-test
     type: PairedImageDataset
-    dataroot_gt: ./datasets/HIDE/test/blur_crops
-    dataroot_lq: ./datasets/HIDE/test/sharp_crops
+    dataroot_gt: ./datasets/HIDE/test/input
+    dataroot_lq: ./datasets/HIDE/test/target
     io_backend:
       type: disk
 
