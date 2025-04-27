@@ -68,7 +68,7 @@ train:
     T_max: 1750000 # 200000 originally, increase 8x due to 8x smaller batch size
     eta_min: !!float 1e-4 # 1e-7 originally
 
-  total_iter: 1600000 # 200000 originally, increase 8x due to 8x smaller batch size
+  total_iter: 1750000 # 200000 originally, increase 8x due to 8x smaller batch size
   warmup_iter: -1 # no warm up
 
   # losses
