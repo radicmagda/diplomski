@@ -187,8 +187,6 @@ class ImageRestorationModel(BaseModel):
         self.lq = self.origin_lq
 
     def optimize_parameters(self, current_iter, tb_logger):
-        self.optimizer_g.zero_grad()
-
         if self.opt['train'].get('mixup', False):
             self.mixup_aug()
 
@@ -200,20 +198,15 @@ class ImageRestorationModel(BaseModel):
 
         l_total = 0
         loss_dict = OrderedDict()
-        # pixel loss
-        if self.cri_pix:
-            l_pix = 0.
-            for pred in preds:
-                l_pix += self.cri_pix(pred, self.gt)
 
-            # print('l pix ... ', l_pix)
+        if self.cri_pix:
+            l_pix = sum(self.cri_pix(pred, self.gt) for pred in preds)
             l_total += l_pix
             loss_dict['l_pix'] = l_pix
 
         # perceptual loss
         if self.cri_perceptual:
             l_percep, l_style = self.cri_perceptual(self.output, self.gt)
-        #
             if l_percep is not None:
                 l_total += l_percep
                 loss_dict['l_percep'] = l_percep
@@ -221,17 +214,11 @@ class ImageRestorationModel(BaseModel):
                 l_total += l_style
                 loss_dict['l_style'] = l_style
 
-
         l_total = l_total + 0. * sum(p.sum() for p in self.net_g.parameters())
-
         l_total.backward()
-        use_grad_clip = self.opt['train'].get('use_grad_clip', True)
-        if use_grad_clip:
-            torch.nn.utils.clip_grad_norm_(self.net_g.parameters(), 0.01)
-        self.optimizer_g.step()
-
 
         self.log_dict = self.reduce_loss_dict(loss_dict)
+        return l_total  # Add this line to let caller know how much to scale
 
     def test(self):
         self.net_g.eval()
