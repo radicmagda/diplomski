@@ -22,4 +22,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 #CMD ["/bin/bash"]
 
 # Start the Python training script by default
-CMD ["python", "basicsr/train.py", "-opt", "options/train/GoPro/NAFNet-width32-v2.yml"]
+CMD ["python", "basicsr/train.py", "-opt", "options/train/GoPro/NAFNet-width32-v3.yml"]
