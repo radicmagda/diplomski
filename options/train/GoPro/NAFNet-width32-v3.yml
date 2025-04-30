@@ -57,7 +57,7 @@ path:
 
 # training settings
 train:
-  accumulation_steps: 1
+  accumulation_steps: 8 # 8x smaller batch size due to memory issues, so need to accumulate gradients 8 times
   optim_g:
     type: AdamW
     lr: !!float 1e-3
