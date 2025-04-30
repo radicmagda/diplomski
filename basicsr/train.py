@@ -249,7 +249,16 @@ def main():
                 current_iter, warmup_iter=opt['train'].get('warmup_iter', -1))
             # training
             model.feed_data(train_data, is_val=False)
-            result_code = model.optimize_parameters(current_iter, tb_logger)
+            if current_iter % opt['train'].get('accumulation_steps', 1) == 1:
+                model.optimizer_g.zero_grad()
+
+            loss = model.optimize_parameters(current_iter, tb_logger)
+
+            if current_iter % opt['train'].get('accumulation_steps', 1) == 0:
+                if opt['train'].get('use_grad_clip', True):
+                    torch.nn.utils.clip_grad_norm_(model.net_g.parameters(), 0.01)
+                model.optimizer_g.step()
+
             # if result_code == -1 and tb_logger:
             #     print('loss explode .. ')
             #     exit(0)
