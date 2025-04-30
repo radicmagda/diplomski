@@ -215,6 +215,7 @@ class ImageRestorationModel(BaseModel):
                 loss_dict['l_style'] = l_style
 
         l_total = l_total + 0. * sum(p.sum() for p in self.net_g.parameters())
+        l_total = l_total / self.opt['train'].get('accumulation_steps', 1)
         l_total.backward()
 
         self.log_dict = self.reduce_loss_dict(loss_dict)
