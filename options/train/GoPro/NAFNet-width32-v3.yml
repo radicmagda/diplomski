@@ -5,7 +5,7 @@
 # Copyright 2018-2020 BasicSR Authors
 # ------------------------------------------------------------------------
 # general settings
-name: NAFNet-GoPro-width32
+name: NAFNet-GoPro-width32-v3
 model_type: ImageRestorationModel
 scale: 1
 num_gpu: 1
@@ -67,7 +67,7 @@ train:
   scheduler:
     type: TrueCosineAnnealingLR
     T_max: 1700000 # 200000 originally, but had to incresae 8x due to 8x smaller batch size plus added extra 100 k    
-    eta_min: !!float 1e-7
+    eta_min: !!float 1e-4
 
   total_iter: 1700000 # 200000 originally, but had to incresae 8x due to 8x smaller batch size plus added extra 100 k
   warmup_iter: -1 # no warm up
@@ -80,7 +80,7 @@ train:
 
 # validation settings
 val:
-  val_freq: !!float 1e4
+  val_freq: !!float 5e4
   save_img: false
 
 
