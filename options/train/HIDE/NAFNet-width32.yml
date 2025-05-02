@@ -57,7 +57,7 @@ path:
 
 # training settings
 train:
-  accumulation_steps: 16 # effectove batch size = 16 * 4 = 64
+  accumulation_steps: 8 # effective batch size = 8 * 4 = 32
   optim_g:
     type: AdamW
     lr: !!float 1e-3
