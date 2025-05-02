@@ -28,8 +28,8 @@ datasets:
 
     # data loader
     use_shuffle: true
-    num_worker_per_gpu: 32
-    batch_size_per_gpu: 32
+    num_worker_per_gpu: 4
+    batch_size_per_gpu: 4
     dataset_enlarge_ratio: 1
     prefetch_mode: ~
 
@@ -57,6 +57,7 @@ path:
 
 # training settings
 train:
+  accumulation_steps: 16 # effectove batch size = 16 * 4 = 64
   optim_g:
     type: AdamW
     lr: !!float 1e-3
