@@ -1,0 +1,82 @@
+#### yml file for testing !!!!!!!!!!GOPRO-TRAINED !!!!! NAFNet on the HIDE dataset ####
+# ------------------------------------------------------------------------
+# Copyright (c) 2022 megvii-model. All Rights Reserved.
+# ------------------------------------------------------------------------
+# Modified from BasicSR (https://github.com/xinntao/BasicSR)
+# Copyright 2018-2020 BasicSR Authors
+# ------------------------------------------------------------------------
+# general settings
+name: NAFNet-GoPro-width32-test-HIDE
+model_type: ImageRestorationModel
+scale: 1
+num_gpu: 1 # set num_gpu: 0 for cpu mode
+manual_seed: 10
+
+# dataset and data loader settings
+datasets:
+  test_scattered_closeups:
+    name: HIDE-scattered-close-up
+    type: PairedImageDataset
+    dataroot_gt: ./datasets/HIDE-scattered-close-up/target
+    dataroot_lq: ./datasets/HIDE-scattered-close-up/input
+    io_backend:
+      type: disk
+
+  test_crowded_longshot:
+    name: HIDE-crowded-long-shot
+    type: PairedImageDataset
+    dataroot_gt: ./datasets/HIDE-crowded-long-shot/target
+    dataroot_lq: ./datasets/HIDE-crowded-long-shot/input
+    io_backend:
+      type: disk
+
+  test_scattered_longshot:
+    name: HIDE-scattered-long-shot
+    type: PairedImageDataset
+    dataroot_gt: ./datasets/HIDE-scattered-long-shot/target
+    dataroot_lq: ./datasets/HIDE-scattered-long-shot/input
+    io_backend:
+      type: disk
+
+  test_crowded_closeups:
+    name: HIDE-crowded-close-up
+    type: PairedImageDataset
+    dataroot_gt: ./datasets/HIDE-crowded-close-up/target
+    dataroot_lq: ./datasets/HIDE-crowded-close-up/input
+    io_backend:
+      type: disk
+
+# network structures
+network_g:
+  type: NAFNetLocal
+  width: 32
+  enc_blk_nums: [1, 1, 1, 28]
+  middle_blk_num: 1
+  dec_blk_nums: [1, 1, 1, 1]
+
+# path
+path:
+  pretrain_network_g: experiments/NAFNet-GoPro-v2/models/net_g_1600000.pth
+  strict_load_g: true
+  resume_state: ~
+
+# validation settings
+val:
+  save_img: true
+  grids: false
+
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: false
+    ssim:
+      type: calculate_ssim
+      crop_border: 0
+      test_y_channel: false
+
+# dist training settings
+dist_params:
+  backend: nccl
+  port: 29500
