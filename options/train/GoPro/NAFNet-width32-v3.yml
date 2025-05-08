@@ -69,7 +69,7 @@ train:
     T_max: 1700000 # 200000 originally, but had to incresae 8x due to 8x smaller batch size plus added extra 100 k    
     eta_min: !!float 1e-4
 
-  total_iter: 1850000 # 200000 originally, but had to incresae 8x due to 8x smaller batch size plus added extra 100 k
+  total_iter: 1900000 # 200000 originally, but had to incresae 8x due to 8x smaller batch size plus added extra 100 k
   warmup_iter: -1 # no warm up
 
   # losses
@@ -80,7 +80,7 @@ train:
 
 # validation settings
 val:
-  val_freq: !!float 5e4
+  val_freq: !!float 1e4
   save_img: false
 
 
