@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     libxrender1 \
     libgl1 \
-    unzip && rm -rf /var/lib/apt/lists/*
+    unzip \
+    curl && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /workspace
