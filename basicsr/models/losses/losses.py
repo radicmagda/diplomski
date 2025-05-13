@@ -88,6 +88,14 @@ class MSELoss(nn.Module):
             pred, target, weight, reduction=self.reduction)
 
 class PSNRLoss(nn.Module):
+    """PSNR loss.
+
+    Args:
+        loss_weight (float): Loss weight for MSE loss. Default: 1.0.
+        reduction (str): Specifies the reduction to apply to the output.
+            Supported choices are 'none' | 'mean' | 'sum'. Default: 'mean'.
+        toY (bool): Whether to convert RGB to Y channel. Default: False.
+    """
 
     def __init__(self, loss_weight=1.0, reduction='mean', toY=False):
         super(PSNRLoss, self).__init__()
@@ -99,6 +107,11 @@ class PSNRLoss(nn.Module):
         self.first = True
 
     def forward(self, pred, target):
+        """
+        Args:
+            pred (Tensor): of shape (N, C, H, W). Predicted tensor.
+            target (Tensor): of shape (N, C, H, W). Ground truth tensor.
+        """
         assert len(pred.size()) == 4
         if self.toY:
             if self.first:
