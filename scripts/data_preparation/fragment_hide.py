@@ -28,7 +28,7 @@ def main():
     crowded_close_up     = list(crowded & close_up)
     crowded_long_shot    = list(crowded & long_shot)
 
-    os.chdir('./datasets/')
+    os.chdir('..')
     src_dirs = {
         'input': [Path('HIDE/train/input'), Path('HIDE/test/input')],
         'target': [Path('HIDE/train/target'), Path('HIDE/test/target')]
