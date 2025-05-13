@@ -16,7 +16,7 @@ def find_file(filename, dirs):
         
 def main():
 # Load all files into sets
-    os.chdir('/content/drive/MyDrive/git_test/diplomski/datasets/HIDE_annotations')
+    os.chdir('./datasets/HIDE_annotations')
     close_up = load_set('Depth-close-up.txt')
     long_shot = load_set('Depth-long-shot.txt')
     scattered = load_set('Quantity-scattered.txt')
