@@ -3,11 +3,18 @@ import shutil
 
 from pathlib import Path
 
-def main():
-    def load_set(filename):
-        with open(filename) as f:
-            return set(line.strip() for line in f)
+def load_set(filename):
+    with open(filename) as f:
+        return set(line.strip() for line in f)
 
+def find_file(filename, dirs):
+        for dir_path in dirs:
+            file_path = dir_path / filename
+            if file_path.exists():
+                return file_path
+        return None
+        
+def main():
 # Load all files into sets
     os.chdir('/content/drive/MyDrive/git_test/diplomski/datasets/HIDE_annotations')
     close_up = load_set('Depth-close-up.txt')
@@ -36,12 +43,6 @@ def main():
     }
 
     # Helper: find file in all possible source dirs
-    def find_file(filename, dirs):
-        for dir_path in dirs:
-            file_path = dir_path / filename
-            if file_path.exists():
-                return file_path
-        return None
 
 # Process each category
     for category, file_list in categories.items():
