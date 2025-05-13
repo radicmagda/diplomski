@@ -3,7 +3,7 @@ import shutil
 
 from pathlib import Path
 
-def main()
+def main():
     def load_set(filename):
         with open(filename) as f:
             return set(line.strip() for line in f)
