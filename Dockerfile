@@ -23,4 +23,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 #CMD ["/bin/bash"]
 
 # Start the Python training script by default
-CMD ["python", "basicsr/test.py", "-opt", "options/test/HIDE/NAFNet-width32.yml"]
+CMD ["python", "basicsr/train.py", "-opt", "options/train/HIDE/NAFNet-width32.yml"]
