@@ -4,7 +4,7 @@ import os.path as osp
 import torch
 from tqdm import tqdm
 from copy import deepcopy
-from basicsr.utils import tensor2img, imwrite
+from basicsr.utils import get_root_logger, tensor2img, imwrite
 from basicsr.models.base_model import BaseModel
 loss_module = importlib.import_module('basicsr.models.losses')
 metric_module = importlib.import_module('basicsr.metrics')
