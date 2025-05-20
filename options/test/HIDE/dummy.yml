@@ -22,14 +22,6 @@ datasets:
     io_backend:
       type: disk
 
- # test_crowded_longshot:
-  #  name: HIDE-crowded-long-shot
-   # type: PairedImageDataset
-    #dataroot_gt: ./datasets/HIDE-crowded-long-shot/target
-    #dataroot_lq: ./datasets/HIDE-crowded-long-shot/input
-    #io_backend:
-     # type: disk
-
   test_scattered_longshot:
     name: HIDE-scattered-long-shot
     type: PairedImageDataset
@@ -38,13 +30,21 @@ datasets:
     io_backend:
       type: disk
 
-  #test_crowded_closeups:
-   # name: HIDE-crowded-close-up
-    #type: PairedImageDataset
-    #dataroot_gt: ./datasets/HIDE-crowded-close-up/target
-    #dataroot_lq: ./datasets/HIDE-crowded-close-up/input
-    #io_backend:
-     # type: disk
+  test_crowded_longshot:
+    name: HIDE-crowded-long-shot
+    type: PairedImageDataset
+    dataroot_gt: ./datasets/HIDE-crowded-long-shot/target
+    dataroot_lq: ./datasets/HIDE-crowded-long-shot/input
+    io_backend:
+     type: disk
+
+  test_crowded_closeups:
+    name: HIDE-crowded-close-up
+    type: PairedImageDataset
+    dataroot_gt: ./datasets/HIDE-crowded-close-up/target
+    dataroot_lq: ./datasets/HIDE-crowded-close-up/input
+    io_backend:
+     type: disk
 
 # network structures
 network_g:
