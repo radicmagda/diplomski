@@ -66,10 +66,10 @@ train:
 
   scheduler:
     type: TrueCosineAnnealingLR
-    T_max: 2000000 # 200000 originally, but had to incresae 3x due to 3x bigger dataset
+    T_max: 3000000 # 200000 originally, but had to incresae 3x due to 3x bigger dataset
     eta_min: !!float 1e-7
 
-  total_iter: 2000000 # 200000 originally, but had to incresae 3x due to 3x bigger dataset
+  total_iter: 3000000 # 200000 originally, but had to incresae 3x due to 3x bigger dataset
   warmup_iter: -1 # no warm up
 
   # losses
