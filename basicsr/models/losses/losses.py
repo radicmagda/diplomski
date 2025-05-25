@@ -129,23 +129,34 @@ class PSNRLoss(nn.Module):
 
 
 class DWTLoss(nn.Module):
-    def __init__(self, wave='haar', level=1, loss_fn=nn.L1Loss()):
+    def __init__(self, loss_weight=1.0, reduction='mean', wave='haar', level=1, loss_fn=nn.L1Loss()):
         super().__init__()
         self.dwt = DWTForward(J=level, wave=wave, mode='zero')  # zero padding, can change to 'symmetric'
         self.loss_fn = loss_fn
+        self.loss_weight = loss_weight
+        self.reduction = reduction
 
     def forward(self, pred, target):
-        # Both pred and target should be [B, C, H, W]
         yl_pred, yh_pred = self.dwt(pred)
         yl_target, yh_target = self.dwt(target)
 
-        # Compute loss on approximation coefficients
-        loss = self.loss_fn(yl_pred, yl_target)
+        # Loss on low frequency (approximation)
+        loss_ll = self.loss_fn(yl_pred, yl_target)  # shape [B, C, H, W]
 
-        # Compute loss on detail coefficients
-        for yh_p, yh_t in zip(yh_pred, yh_target):  # list of tuples per level
-            for p, t in zip(yh_p, yh_t):  # for each orientation: HL, LH, HH
-                loss += self.loss_fn(p, t)
+        # Loss on high-frequency (details)
+        loss_h = 0
+        for yh_p, yh_t in zip(yh_pred, yh_target):
+            for p, t in zip(yh_p, yh_t):
+                loss_h += self.loss_fn(p, t)
 
-        return loss
+        # Combine losses
+        loss = loss_ll + loss_h  # still shape [B, C, H, W]
+
+        # Reduce over all elements and batch
+        if self.reduction == 'mean':
+            loss = loss.mean()
+        elif self.reduction == 'sum':
+            loss = loss.sum()
+
+        return self.loss_weight * loss
 
