@@ -8,8 +8,7 @@ import torch
 from torch import nn as nn
 from torch.nn import functional as F
 import numpy as np
-import pywt
-
+from pytorch_wavelets import DWTForward
 from basicsr.models.losses.loss_util import weighted_loss
 
 _reduction_modes = ['none', 'mean', 'sum']
@@ -130,44 +129,23 @@ class PSNRLoss(nn.Module):
 
 
 class DWTLoss(nn.Module):
-    """DWT-based loss. Computes L1 loss on wavelet-decomposed images.
-
-    Args:
-        loss_weight (float): Weight of the loss.
-        wavelet (str): Type of wavelet to use (e.g., 'haar', 'db1').
-        reduction (str): Reduction method.
-    """
-
-    def __init__(self, loss_weight=1.0, wavelet='haar', reduction='mean'):
-        super(DWTLoss, self).__init__()
-        self.loss_weight = loss_weight
-        self.wavelet = wavelet
-        self.reduction = reduction
-
-    def dwt_decompose(self, img):
-        # Input: (N, C, H, W), Output: same shape, with concatenated DWT channels
-        coeffs = []
-        for c in range(img.shape[1]):
-            # Apply DWT per channel
-            cfs = [pywt.dwt2(img[b, c].cpu().numpy(), self.wavelet) for b in range(img.shape[0])]
-            LL, (LH, HL, HH) = zip(*cfs)
-            coeffs.append([
-                torch.tensor(np.stack(LL)).unsqueeze(1), # pylint: disable=no-member
-                torch.tensor(np.stack(LH)).unsqueeze(1), # pylint: disable=no-member
-                torch.tensor(np.stack(HL)).unsqueeze(1), # pylint: disable=no-member
-                torch.tensor(np.stack(HH)).unsqueeze(1), # pylint: disable=no-member
-            ])
-        # Stack across channels
-        components = [torch.cat([coeffs[c][i] for c in range(img.shape[1])], dim=1).to(img.device) for i in range(4)] # pylint: disable=no-member
-        return components  # [LL, LH, HL, HH], each (N, C, H/2, W/2)
+    def __init__(self, wave='haar', level=1, loss_fn=nn.L1Loss()):
+        super().__init__()
+        self.dwt = DWTForward(J=level, wave=wave, mode='zero')  # zero padding, can change to 'symmetric'
+        self.loss_fn = loss_fn
 
     def forward(self, pred, target):
-        pred_coeffs = self.dwt_decompose(pred)
-        target_coeffs = self.dwt_decompose(target)
+        # Both pred and target should be [B, C, H, W]
+        yl_pred, yh_pred = self.dwt(pred)
+        yl_target, yh_target = self.dwt(target)
 
-        total_loss = 0.0
-        for p, t in zip(pred_coeffs, target_coeffs):
-            total_loss += F.l1_loss(p, t, reduction=self.reduction)
+        # Compute loss on approximation coefficients
+        loss = self.loss_fn(yl_pred, yl_target)
 
-        return self.loss_weight * total_loss
+        # Compute loss on detail coefficients
+        for yh_p, yh_t in zip(yh_pred, yh_target):  # list of tuples per level
+            for p, t in zip(yh_p, yh_t):  # for each orientation: HL, LH, HH
+                loss += self.loss_fn(p, t)
+
+        return loss
 

@@ -12,4 +12,4 @@ tb-nightly
 tqdm
 yapf
 gdown
-PyWavelets
+pytorch_wavelets
