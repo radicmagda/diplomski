@@ -8,7 +8,7 @@ import torch
 from torch import nn as nn
 from torch.nn import functional as F
 import numpy as np
-
+from pytorch_wavelets import DWTForward
 from basicsr.models.losses.loss_util import weighted_loss
 
 _reduction_modes = ['none', 'mean', 'sum']
@@ -126,4 +126,37 @@ class PSNRLoss(nn.Module):
         assert len(pred.size()) == 4
 
         return self.loss_weight * self.scale * torch.log(((pred - target) ** 2).mean(dim=(1, 2, 3)) + 1e-8).mean()
+
+
+class DWTLoss(nn.Module):
+    def __init__(self, loss_weight=1.0, reduction='mean', wave='haar', level=1, loss_fn=nn.L1Loss()):
+        super().__init__()
+        self.dwt = DWTForward(J=level, wave=wave, mode='zero')  # zero padding, can change to 'symmetric'
+        self.loss_fn = loss_fn
+        self.loss_weight = loss_weight
+        self.reduction = reduction
+
+    def forward(self, pred, target):
+        yl_pred, yh_pred = self.dwt(pred)
+        yl_target, yh_target = self.dwt(target)
+
+        # Loss on low frequency (approximation)
+        loss_ll = self.loss_fn(yl_pred, yl_target)  # shape [B, C, H, W]
+
+        # Loss on high-frequency (details)
+        loss_h = 0
+        for yh_p, yh_t in zip(yh_pred, yh_target):
+            for p, t in zip(yh_p, yh_t):
+                loss_h += self.loss_fn(p, t)
+
+        # Combine losses
+        loss = loss_ll + loss_h  # still shape [B, C, H, W]
+
+        # Reduce over all elements and batch
+        if self.reduction == 'mean':
+            loss = loss.mean()
+        elif self.reduction == 'sum':
+            loss = loss.sum()
+
+        return self.loss_weight * loss
 

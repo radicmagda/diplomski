@@ -12,3 +12,4 @@ tb-nightly
 tqdm
 yapf
 gdown
+pytorch_wavelets
