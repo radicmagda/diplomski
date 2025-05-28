@@ -13,3 +13,4 @@ tqdm
 yapf
 gdown
 pytorch_wavelets
+PyWavelets
