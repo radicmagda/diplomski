@@ -4,8 +4,6 @@ from collections import OrderedDict
 from torch import nn as nn
 from torchvision.models import vgg as vgg
 
-from basicsr.utils.registry import ARCH_REGISTRY
-
 VGG_PRETRAIN_PATH = 'experiments/pretrained_models/vgg19-dcbb9e9d.pth'
 NAMES = {
     'vgg11': [
@@ -51,7 +49,6 @@ def insert_bn(names):
     return names_bn
 
 
-@ARCH_REGISTRY.register()
 class VGGFeatureExtractor(nn.Module):
     """VGG network for feature extraction.
 

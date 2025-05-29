@@ -10,7 +10,7 @@ from torch.nn import functional as F
 import numpy as np
 from pytorch_wavelets import DWTForward
 from basicsr.models.losses.loss_util import weighted_loss
-from basicsr.archs.vgg_arch import VGGFeatureExtractor
+from basicsr.models.archs.vgg_arch import VGGFeatureExtractor
 
 _reduction_modes = ['none', 'mean', 'sum']
 
