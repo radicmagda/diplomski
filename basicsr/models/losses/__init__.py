@@ -4,8 +4,8 @@
 # Modified from BasicSR (https://github.com/xinntao/BasicSR)
 # Copyright 2018-2020 BasicSR Authors
 # ------------------------------------------------------------------------
-from .losses import (L1Loss, MSELoss, PSNRLoss, DWTLoss)
+from .losses import (L1Loss, MSELoss, PSNRLoss, DWTLoss, PerceptualLoss)
 
 __all__ = [
-    'L1Loss', 'MSELoss', 'PSNRLoss', 'DWTLoss',
+    'L1Loss', 'MSELoss', 'PSNRLoss', 'DWTLoss', 'PerceptualLoss'
 ]
