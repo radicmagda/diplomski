@@ -189,6 +189,7 @@ class PerceptualLoss(nn.Module):
     """
 
     def __init__(self,
+                 loss_weight=1.0,
                  layer_weights=None,
                  vgg_type='vgg19',
                  use_input_norm=True,
@@ -197,16 +198,22 @@ class PerceptualLoss(nn.Module):
                  style_weight=0.,
                  criterion='l1'):
         super(PerceptualLoss, self).__init__()
+        self.loss_weight = loss_weight
         self.perceptual_weight = perceptual_weight
         self.style_weight = style_weight
         if layer_weights is None:
             layer_weights = {'conv2_2': 1.0, 'conv3_4': 1.0, 'conv4_4': 1.0}
         self.layer_weights = layer_weights
+
         self.vgg = VGGFeatureExtractor(
             layer_name_list=list(layer_weights.keys()),
             vgg_type=vgg_type,
             use_input_norm=use_input_norm,
             range_norm=range_norm)
+        
+        self.vgg.eval()
+        for param in self.vgg.parameters():
+            param.requires_grad = False
 
         self.criterion_type = criterion
         if self.criterion_type == 'l1':
@@ -226,56 +233,64 @@ class PerceptualLoss(nn.Module):
             gt (Tensor): Ground-truth tensor with shape (n, c, h, w).
 
         Returns:
-            Tensor: Forward results.
+            Tensor: Scalar perceptual + style loss.
         """
-        # if isinstance(x, tuple):
-        #     x, _, _ = x
-        # c,h,w = x.shape[2:]
-        # x = x.view(-1,c,h,w)
-        # gt = gt.view(-1,c,h,w)
-        # extract vgg features
         x_features = self.vgg(x)
         gt_features = self.vgg(gt.detach())
 
-        # calculate perceptual loss
+        percep_loss = 0.0
+        style_loss = 0.0
+
         if self.perceptual_weight > 0:
-            percep_loss = 0
             for k in x_features.keys():
                 if self.criterion_type == 'fro':
-                    percep_loss += torch.norm(x_features[k] - gt_features[k], p='fro') * self.layer_weights[k]
+                    diff = x_features[k] - gt_features[k]
+                    loss = diff.view(diff.size(0), -1).norm(p='fro', dim=1).mean()
                 else:
-                    percep_loss += self.criterion(x_features[k], gt_features[k]) * self.layer_weights[k]
+                    loss = self.criterion(x_features[k], gt_features[k])
+                percep_loss += self.layer_weights[k] * loss
             percep_loss *= self.perceptual_weight
-        else:
-            percep_loss = None
 
-        # calculate style loss
         if self.style_weight > 0:
-            style_loss = 0
             for k in x_features.keys():
+                gram_x = self._gram_mat(x_features[k])
+                gram_gt = self._gram_mat(gt_features[k])
                 if self.criterion_type == 'fro':
-                    style_loss += torch.norm(
-                        self._gram_mat(x_features[k]) - self._gram_mat(gt_features[k]), p='fro') * self.layer_weights[k]
+                    diff = gram_x - gram_gt
+                    loss = diff.view(diff.size(0), -1).norm(p='fro', dim=1).mean()
                 else:
-                    style_loss += self.criterion(self._gram_mat(x_features[k]), self._gram_mat(
-                        gt_features[k])) * self.layer_weights[k]
+                    loss = self.criterion(gram_x, gram_gt)
+                style_loss += self.layer_weights[k] * loss
             style_loss *= self.style_weight
-        else:
-            style_loss = None
 
-        return percep_loss, style_loss
+        # Return combined scalar (or 0.0 if unused)
+        total_loss = self.loss_weight * (percep_loss + style_loss)
 
-    def _gram_mat(self, x):
-        """Calculate Gram matrix.
+        return total_loss
 
-        Args:
-            x (torch.Tensor): Tensor with shape of (n, c, h, w).
+def _gram_mat(self, x):
+    """
+    Calculate the Gram matrix of input feature maps.
 
-        Returns:
-            torch.Tensor: Gram matrix.
-        """
-        n, c, h, w = x.size()
-        features = x.view(n, c, w * h)
-        features_t = features.transpose(1, 2)
-        gram = features.bmm(features_t) / (c * h * w)
-        return gram
+    The Gram matrix is used to measure the correlations between the different
+    feature channels. It is commonly used in style loss computations.
+
+    Args:
+        x (torch.Tensor): Feature maps with shape (n, c, h, w), where
+            n = batch size,
+            c = number of channels,
+            h = height,
+            w = width.
+
+    Returns:
+        torch.Tensor: Gram matrix of shape (n, c, c), normalized by the
+            number of elements (c * h * w).
+    """
+    n, c, h, w = x.size()
+    # Reshape to (n, c, h*w) to treat each feature map as a vector
+    features = x.view(n, c, h * w)
+    # Transpose features to (n, h*w, c) for batch matrix multiplication
+    features_t = features.transpose(1, 2)
+    # Compute batch matrix multiplication of features and its transpose
+    gram = features.bmm(features_t) / (c * h * w)  # Normalize by total elements
+    return gram
