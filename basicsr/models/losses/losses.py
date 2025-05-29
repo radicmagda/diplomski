@@ -189,7 +189,7 @@ class PerceptualLoss(nn.Module):
     """
 
     def __init__(self,
-                 layer_weights,
+                 layer_weights=None,
                  vgg_type='vgg19',
                  use_input_norm=True,
                  range_norm=False,
@@ -199,6 +199,8 @@ class PerceptualLoss(nn.Module):
         super(PerceptualLoss, self).__init__()
         self.perceptual_weight = perceptual_weight
         self.style_weight = style_weight
+        if layer_weights is None:
+            layer_weights = {'conv2_2': 1.0, 'conv3_4': 1.0, 'conv4_4': 1.0}
         self.layer_weights = layer_weights
         self.vgg = VGGFeatureExtractor(
             layer_name_list=list(layer_weights.keys()),
