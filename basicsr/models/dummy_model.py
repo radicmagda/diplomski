@@ -1,16 +1,16 @@
 import importlib
 import os.path as osp
 import torch
-import torch.nn.functional as F
 from tqdm import tqdm
 from copy import deepcopy
+import torch.nn.functional as F
 from collections import OrderedDict
 from basicsr.utils import get_root_logger, tensor2img, imwrite
 from basicsr.models.base_model import BaseModel
+import csv 
 
 loss_module = importlib.import_module('basicsr.models.losses')
 metric_module = importlib.import_module('basicsr.metrics')
-
 
 class DummyModel(BaseModel):
     def __init__(self, opt):
@@ -31,15 +31,20 @@ class DummyModel(BaseModel):
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img, rgb2bgr, use_image):
         dataset_name = dataloader.dataset.opt['name']
         with_metrics = self.opt['val'].get('metrics') is not None
+        save_per_image_metrics = self.opt['val'].get('save_per_image_metrics', False)
+
         if with_metrics:
             self.metric_results = {
                 metric: 0
                 for metric in self.opt['val']['metrics'].keys()
             }
 
+        if save_per_image_metrics and not self.opt['is_train']:
+            per_image_metrics = []  # NEW: list to hold per-image results
+
+
         # Progress bar for single-process execution
         pbar = tqdm(total=len(dataloader), unit='image')
-
         cnt = 0
 
         for idx, val_data in enumerate(dataloader):
@@ -99,16 +104,24 @@ class DummyModel(BaseModel):
             if with_metrics:
                 # Calculate metrics
                 opt_metric = deepcopy(self.opt['val']['metrics'])
+                img_metrics = {'image_name': img_name}  # NEW
                 if use_image:
                     for name, opt_ in opt_metric.items():
                         metric_type = opt_.pop('type')
-                        self.metric_results[name] += getattr(
-                            metric_module, metric_type)(sr_img, gt_img, **opt_)
+                        result = getattr(metric_module, metric_type)(sr_img, gt_img, **opt_)
+                        self.metric_results[name] += result
+                        if save_per_image_metrics:
+                            img_metrics[name] = result
                 else:
                     for name, opt_ in opt_metric.items():
                         metric_type = opt_.pop('type')
-                        self.metric_results[name] += getattr(
-                            metric_module, metric_type)(visuals['result'], visuals['gt'], **opt_)
+                        result = getattr(metric_module, metric_type)(visuals['result'], visuals['gt'], **opt_)
+                        self.metric_results[name] += result
+                        if save_per_image_metrics:
+                            img_metrics[name] = result
+
+                if save_per_image_metrics:
+                    per_image_metrics.append(img_metrics)  # NEW
 
             cnt += 1
             pbar.update(1)
@@ -124,6 +137,16 @@ class DummyModel(BaseModel):
             self._log_validation_metric_values(
                 current_iter, dataloader.dataset.opt['name'], tb_logger, metrics_dict
             )
+        
+        # Write per-image metrics to CSV
+        if save_per_image_metrics and per_image_metrics:
+            csv_path = osp.join(self.opt['path']['log'], f'per_image_metrics_{dataset_name}.csv')
+            with open(csv_path, 'w', newline='') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=per_image_metrics[0].keys())
+                writer.writeheader()
+                writer.writerows(per_image_metrics)
+            print(f'[INFO] Per-image metrics saved to: {csv_path}')  # optional print
+        
 
         return 0.
 
