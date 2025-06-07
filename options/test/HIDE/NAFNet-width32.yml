@@ -64,6 +64,7 @@ path:
 val:
   save_img: false
   grids: false
+  save_per_image_metrics: true
 
 
   metrics:
