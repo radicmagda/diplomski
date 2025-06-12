@@ -16,5 +16,5 @@ mv test_dataset/GoPro/test datasets/GoPro
 rm -rf test_dataset
 
 python scripts/data_preparation/make_crops.py GoPro
-rm -rf datasets/GoPro/train/input
-rm -rf datasets/GoPro/train/target
+#rm -rf datasets/GoPro/train/input
+#rm -rf datasets/GoPro/train/target

@@ -203,7 +203,7 @@ if __name__ == '__main__':
         return v.lower() in ('yes', 'true', 't', '1')
     
     parser.add_argument('--dataset_name', type=str, help='The name of the dataset for which to create crops', default='GoPro')
-    parser.add_argument('--create_train', type=str2bool, help='True if question to create crops for training set, False otherwise', default=False)
+    parser.add_argument('--create_train', type=str2bool, help='True if question to create crops for training set, False otherwise', default=True)
     parser.add_argument('--create_test', type=str2bool, help='True if question to create crops for test set, False otherwise', default=False)
 
     args = parser.parse_args()

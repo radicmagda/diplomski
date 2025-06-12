@@ -60,5 +60,5 @@ rm -r RealBlur_dataset
 
 # ========== Create Crops for Training ==========
 python scripts/data_preparation/make_crops.py RealBlur
-rm -rf datasets/RealBlur/train/input   # optional, remove "whole" training images
-rm -rf datasets/RealBlur/train/target  # optional, remove "whole" training images
+#rm -rf datasets/RealBlur/train/input   # optional, remove "whole" training images
+#rm -rf datasets/RealBlur/train/target  # optional, remove "whole" training images
