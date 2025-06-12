@@ -11,6 +11,7 @@ import sys
 from multiprocessing import Pool
 from os import path as osp
 from tqdm import tqdm
+import argparse
 
 project_path = os.getcwd()
 print(project_path)
@@ -68,24 +69,42 @@ def create_lmdb_for_gopro():
     #img_path_list, keys = prepare_keys(folder_path, 'png')
     #make_lmdb_from_imgs(folder_path, lmdb_path, img_path_list, keys)
 
-def create_fragments(dataset_name:str):
+def create_fragments(dataset_name:str, 
+                     create_for_train:bool=True,
+                     create_for_test:bool=False):
     opt = {}
     opt['n_thread'] = 20
     opt['compression_level'] = 3
+    
+    if create_for_train:
+        opt['input_folder'] = f'./datasets/{dataset_name}/train/input'
+        opt['save_folder'] = f'./datasets/{dataset_name}/train/blur_crops'
+        opt['crop_size'] = 512
+        opt['step'] = 256
+        opt['thresh_size'] = 0
+        extract_subimages(opt)
 
-    opt['input_folder'] = f'./datasets/{dataset_name}/train/input'
-    opt['save_folder'] = f'./datasets/{dataset_name}/train/blur_crops'
-    opt['crop_size'] = 512
-    opt['step'] = 256
-    opt['thresh_size'] = 0
-    extract_subimages(opt)
+        opt['input_folder'] = f'./datasets/{dataset_name}/train/target'
+        opt['save_folder'] = f'./datasets/{dataset_name}/train/sharp_crops'
+        opt['crop_size'] = 512
+        opt['step'] = 256
+        opt['thresh_size'] = 0
+        extract_subimages(opt)
 
-    opt['input_folder'] = f'./datasets/{dataset_name}/train/target'
-    opt['save_folder'] = f'./datasets/{dataset_name}/train/sharp_crops'
-    opt['crop_size'] = 512
-    opt['step'] = 256
-    opt['thresh_size'] = 0
-    extract_subimages(opt)
+    if create_for_test:
+        opt['input_folder'] = f'./datasets/{dataset_name}/test/input'
+        opt['save_folder'] = f'./datasets/{dataset_name}/test/blur_crops'
+        opt['crop_size'] = 512
+        opt['step'] = 256
+        opt['thresh_size'] = 0
+        extract_subimages(opt)
+
+        opt['input_folder'] = f'./datasets/{dataset_name}/test/target'
+        opt['save_folder'] = f'./datasets/{dataset_name}/test/sharp_crops'
+        opt['crop_size'] = 512
+        opt['step'] = 256
+        opt['thresh_size'] = 0
+        extract_subimages(opt)
 
 
 
@@ -178,5 +197,19 @@ def worker(path, opt):
 
 
 if __name__ == '__main__':
-    create_fragments(dataset_name=sys.argv[1])
+    parser = argparse.ArgumentParser()
+
+    def str2bool(v):
+        return v.lower() in ('yes', 'true', 't', '1')
+    
+    parser.add_argument('--dataset_name', type=str, help='The name of the dataset for which to create crops', default='GoPro')
+    parser.add_argument('--create_train', type=str2bool, help='True if question to create crops for training set, False otherwise', default=False)
+    parser.add_argument('--create_test', type=str2bool, help='True if question to create crops for test set, False otherwise', default=False)
+
+    args = parser.parse_args()
+
+    create_fragments(dataset_name=args.dataset_name,
+                     create_for_train=args.create_train,
+                     create_for_test=args.create_test)
+    
     #create_lmdb_for_gopro()
