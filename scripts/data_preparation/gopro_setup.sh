@@ -15,6 +15,6 @@ rm test_dataset.zip
 mv test_dataset/GoPro/test datasets/GoPro 
 rm -rf test_dataset
 
-python scripts/data_preparation/make_crops.py GoPro
+python scripts/data_preparation/make_crops.py --dataset GoPro
 #rm -rf datasets/GoPro/train/input
 #rm -rf datasets/GoPro/train/target
