@@ -13,7 +13,7 @@ manual_seed: 10
 
 # dataset and data loader settings
 datasets:
-  test:
+  test-goprotrain:
     name: gopro-train-wholeimages
     type: PairedImageDataset
 
@@ -23,7 +23,7 @@ datasets:
     io_backend:
       type: disk
 
-  test:
+  test-goprotest:
     name: gopro-test-wholeimages
     type: PairedImageDataset
 
@@ -61,6 +61,10 @@ val:
       test_y_channel: false
     ssim:
       type: calculate_ssim
+      crop_border: 0
+      test_y_channel: false
+    local_mse_std:
+      type: calculate_local_mse_std
       crop_border: 0
       test_y_channel: false
 
