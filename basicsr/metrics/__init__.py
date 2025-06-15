@@ -8,6 +8,7 @@ from .niqe import calculate_niqe
 from .psnr_ssim import calculate_psnr, calculate_ssim, calculate_ssim_left, calculate_psnr_left, calculate_skimage_ssim, calculate_skimage_ssim_left
 from .fid import calculate_fid
 from .lpips import calculate_lpips
+from .local_mse_std import calculate_local_mse_std
 
 __all__ = ['calculate_psnr', 
            'calculate_ssim',
@@ -17,4 +18,5 @@ __all__ = ['calculate_psnr',
            'calculate_skimage_ssim', 
            'calculate_skimage_ssim_left',
            'calculate_fid',
-           'calculate_lpips']
+           'calculate_lpips',
+           'calculate_local_mse_std']
