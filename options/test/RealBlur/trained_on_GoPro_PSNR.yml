@@ -14,19 +14,11 @@ manual_seed: 10
 
 # dataset and data loader settings
 datasets:
-  realblur-entire-wholeimages:
+  test:
     name: realblur-entire-wholeimages
     type: PairedImageDataset
     dataroot_gt: ./datasets/RealBlur/target
     dataroot_lq: ./datasets/RealBlur/input
-    io_backend:
-      type: disk
-
-  realblur-entire-crops:
-    name: realblur-entire-crops
-    type: PairedImageDataset
-    dataroot_gt: ./datasets/RealBlur/sharp_crops
-    dataroot_lq: ./datasets/RealBlur/blur_crops
     io_backend:
       type: disk
 
