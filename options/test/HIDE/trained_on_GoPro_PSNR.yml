@@ -6,7 +6,7 @@
 # Copyright 2018-2020 BasicSR Authors
 # ------------------------------------------------------------------------
 # general settings
-name: NAFNet-GoPro-width32-test-HIDE
+name: TEST-trained_on_GoPro_PSNR-HIDE
 model_type: ImageRestorationModel
 scale: 1
 num_gpu: 1 # set num_gpu: 0 for cpu mode
@@ -66,7 +66,6 @@ val:
   grids: false
   save_per_image_metrics: true
 
-
   metrics:
     psnr: # metric name, can be arbitrary
       type: calculate_psnr
@@ -74,6 +73,10 @@ val:
       test_y_channel: false
     ssim:
       type: calculate_ssim
+      crop_border: 0
+      test_y_channel: false
+    local_mse_std:
+      type: calculate_local_mse_std
       crop_border: 0
       test_y_channel: false
 
