@@ -14,3 +14,4 @@ yapf
 gdown
 pytorch_wavelets
 PyWavelets
+lpips
