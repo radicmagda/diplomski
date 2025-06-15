@@ -1,0 +1,66 @@
+#### yml file for testing !!!!!!!!!!GOPRO-TRAINED !!!!! NAFNet on the HIDE dataset ####
+# ------------------------------------------------------------------------
+# Copyright (c) 2022 megvii-model. All Rights Reserved.
+# ------------------------------------------------------------------------
+# Modified from BasicSR (https://github.com/xinntao/BasicSR)
+# Copyright 2018-2020 BasicSR Authors
+# ------------------------------------------------------------------------
+# general settings
+name: TEST-dummy-realblur
+model_type: DummyModel
+scale: 1
+num_gpu: 1 # set num_gpu: 0 for cpu mode
+manual_seed: 10
+
+# dataset and data loader settings
+datasets:
+  realblur-entire-wholeimages:
+    name: realblur-entire-wholeimages
+    type: PairedImageDataset
+    dataroot_gt: ./datasets/RealBlur/target
+    dataroot_lq: ./datasets/RealBlur/input
+    io_backend:
+      type: disk
+
+  realblur-entire-crops:
+    name: realblur-entire-crops
+    type: PairedImageDataset
+    dataroot_gt: ./datasets/RealBlur/sharp_crops
+    dataroot_lq: ./datasets/RealBlur/blur_crops
+    io_backend:
+      type: disk
+
+# network structures
+network_g:
+  type: NAFNetLocal
+  width: 32
+  enc_blk_nums: [1, 1, 1, 28]
+  middle_blk_num: 1
+  dec_blk_nums: [1, 1, 1, 1]
+
+# path
+path:
+  pretrain_network_g: experiments/NAFNet-GoPro-width32-v3/models/net_g_1810000.pth
+  strict_load_g: true
+  resume_state: ~
+
+# validation settings
+val:
+  save_img: false
+  grids: false
+  save_per_image_metrics: true
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: false
+    ssim:
+      type: calculate_ssim
+      crop_border: 0
+      test_y_channel: false
+
+# dist training settings
+dist_params:
+  backend: nccl
+  port: 29500
