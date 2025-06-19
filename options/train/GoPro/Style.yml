@@ -5,7 +5,7 @@
 # Copyright 2018-2020 BasicSR Authors
 # ------------------------------------------------------------------------
 # general settings
-name: NAFNet-GoPro-L1-on-GoProPSNR
+name: NAFNet-GoPro-Style-on-GoProPSNR
 model_type: ImageRestorationModel
 scale: 1
 num_gpu: 1
@@ -74,9 +74,10 @@ train:
 
   # losses
   pixel_opt:
-    type: L1Loss
+    type: PerceptualLoss
     loss_weight: 1
-    reduction: mean
+    perceptual_weight : 0.0
+    style_weight : 1.0
 
 # validation settings
 val:
