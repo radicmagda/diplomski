@@ -55,16 +55,16 @@ val:
 
 
   metrics:
-    psnr: # metric name, can be arbitrary
-      type: calculate_psnr
-      crop_border: 0
-      test_y_channel: false
-    ssim:
-      type: calculate_ssim
-      crop_border: 0
-      test_y_channel: false
-    local_mse_std:
-      type: calculate_local_mse_std
+    #psnr: # metric name, can be arbitrary
+      #type: calculate_psnr
+      #crop_border: 0
+      #test_y_channel: false
+    #ssim:
+      #type: calculate_ssim
+      #crop_border: 0
+      #test_y_channel: false
+    local_mse_cv:
+      type: calculate_local_mse_cv
       crop_border: 0
       test_y_channel: false
 
