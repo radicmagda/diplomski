@@ -1,0 +1,117 @@
+# ------------------------------------------------------------------------
+# Copyright (c) 2022 megvii-model. All Rights Reserved.
+# ------------------------------------------------------------------------
+# Modified from BasicSR (https://github.com/xinntao/BasicSR)
+# Copyright 2018-2020 BasicSR Authors
+# ------------------------------------------------------------------------
+# general settings
+name: NAFNet-GoPro-DWT-on-GoProPSNR
+model_type: ImageRestorationModel
+scale: 1
+num_gpu: 1
+manual_seed: 42
+
+datasets:
+  train:
+    name: gopro-train
+    type: PairedImageDataset
+    dataroot_gt: ./datasets/GoPro/train/sharp_crops
+    dataroot_lq: ./datasets/GoPro/train/blur_crops
+
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+    gt_size: 256
+    use_flip: true
+    use_rot: true
+
+    # data loader
+    use_shuffle: true
+    num_worker_per_gpu: 4
+    batch_size_per_gpu: 4
+    dataset_enlarge_ratio: 1
+    prefetch_mode: ~
+
+  val:
+    name: gopro-test
+    type: PairedImageDataset
+    dataroot_gt: ./datasets/GoPro/test/target.lmdb
+    dataroot_lq: ./datasets/GoPro/test/input.lmdb
+    io_backend:
+      type: lmdb
+
+
+network_g:
+  type: NAFNetLocal
+  width: 32
+  enc_blk_nums: [1, 1, 1, 28]
+  middle_blk_num: 1
+  dec_blk_nums: [1, 1, 1, 1]
+
+# path
+path:
+  pretrain_network_g : experiments/NAFNet-GoPro-width32-v3/models/net_g_1810000.pth
+  strict_load_g: true
+  resume_state: ~
+
+# training settings
+train:
+  accumulation_steps: 8 # 8x smaller batch size due to memory issues, so need to accumulate gradients 8 times
+  optim_g:
+    type: AdamW
+    lr: !!float 1e-3
+    weight_decay: !!float 1e-3
+    betas: [0.9, 0.9]
+
+  scheduler:
+    type: TrueCosineAnnealingLR
+    T_max: 300000 # 200000 originally, but had to incresae 8x due to 8x smaller batch size plus added extra 100 k    
+    eta_min: !!float 1e-4
+
+  total_iter: 300000 # 200000 originally, but had to incresae 8x due to 8x smaller batch size plus added extra 100 k
+  warmup_iter: -1 # no warm up
+
+  # losses
+  pixel_opt:
+    type: DWTLoss
+    loss_weight: 1
+    reduction: mean
+
+# validation settings
+val:
+  val_freq: !!float 1e4
+  save_img: false
+
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: false
+    ssim:
+      type: calculate_ssim
+      crop_border: 0
+      test_y_channel: false
+    fid:
+      type: calculate_fid
+      crop_border: 0
+      test_y_channel: false
+    lpips:
+      type: calculate_lpips
+      crop_border: 0
+      test_y_channel: false
+
+# logging settings
+logger:
+  print_freq: 200
+  save_checkpoint_freq: !!float 5e3
+  use_tb_logger: true
+  wandb:
+    project: ~
+    resume_id: ~
+
+# dist training settings
+dist_params:
+  backend: nccl
+  port: 29500
