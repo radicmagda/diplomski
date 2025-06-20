@@ -448,6 +448,7 @@ class ImageRestorationModel(BaseModel):
                 if use_image:
                     for name, opt_ in opt_metric.items():
                         metric_type = opt_.pop('type')
+                        print(opt_)
                         result = getattr(metric_module, metric_type)(sr_img, gt_img, **opt_)
                         self.metric_results[name] += result
                         if save_per_image_metrics:
