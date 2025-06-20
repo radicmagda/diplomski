@@ -27,8 +27,6 @@ def calculate_lpips(img, img2, crop_border, input_order='HWC', test_y_channel=Fa
         raise ValueError(f'Wrong input_order {input_order}. Supported input_orders are ' '"HWC" and "CHW"')
     img = reorder_image(img, input_order=input_order)
     img2 = reorder_image(img2, input_order=input_order)
-    img = img.astype(np.float64)
-    img2 = img2.astype(np.float64)
 
     if crop_border != 0:
         img = img[crop_border:-crop_border, crop_border:-crop_border, ...]
@@ -37,6 +35,9 @@ def calculate_lpips(img, img2, crop_border, input_order='HWC', test_y_channel=Fa
     if test_y_channel:
         img = to_y_channel(img)
         img2 = to_y_channel(img2)
+        # Convert to 3 channels for LPIPS (LPIPS expects 3 channels)
+        img = np.repeat(img[..., None], 3, axis=2)
+        img2 = np.repeat(img2[..., None], 3, axis=2)
 
     # start calculating LPIPS metrics
     DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -45,18 +46,20 @@ def calculate_lpips(img, img2, crop_border, input_order='HWC', test_y_channel=Fa
     mean = [0.5, 0.5, 0.5]
     std = [0.5, 0.5, 0.5]
 
-    img_gt = img2 / 255.
-    img_restored = img / 255.
+    # Normalize to [0,1] and convert to float32
+    img = (img / 255.).astype(np.float32)
+    img2 = (img2 / 255.).astype(np.float32)
 
-    img_gt, img_restored = img2tensor([img_gt, img_restored], bgr2rgb=True, float32=True)
-    # norm to [-1, 1]
+    img_gt, img_restored = img2tensor([img2, img], bgr2rgb=True, float32=True)
+
     normalize(img_gt, mean, std, inplace=True)
     normalize(img_restored, mean, std, inplace=True)
 
-    # calculate lpips
     img_gt = img_gt.to(DEVICE)
     img_restored = img_restored.to(DEVICE)
+
     loss_fn_vgg.eval()
-    lpips_val = loss_fn_vgg(img_restored.unsqueeze(0), img_gt.unsqueeze(0))
+    with torch.no_grad():
+        lpips_val = loss_fn_vgg(img_restored.unsqueeze(0), img_gt.unsqueeze(0))
 
     return lpips_val.detach().cpu().numpy().mean()
