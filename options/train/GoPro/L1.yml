@@ -97,9 +97,9 @@ val:
       type: calculate_lpips
       crop_border: 0
       test_y_channel: false
-    niqe:
-      type: calculate_niqe
-      crop_border: 0
+    #niqe:
+      #type: calculate_niqe
+      #crop_border: 0
 
 # logging settings
 logger:
