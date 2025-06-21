@@ -161,7 +161,7 @@ def niqe(img,
     return quality
 
 
-def calculate_niqe(img, crop_border, input_order='HWC', convert_to='y'):
+def calculate_niqe(img, img2 ,crop_border, input_order='HWC', convert_to='y'):
     """Calculate NIQE (Natural Image Quality Evaluator) metric.
 
     Ref: Making a "Completely Blind" Image Quality Analyzer.
