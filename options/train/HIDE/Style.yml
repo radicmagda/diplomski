@@ -1,0 +1,117 @@
+# ------------------------------------------------------------------------
+# Copyright (c) 2022 megvii-model. All Rights Reserved.
+# ------------------------------------------------------------------------
+# Modified from BasicSR (https://github.com/xinntao/BasicSR)
+# Copyright 2018-2020 BasicSR Authors
+# ------------------------------------------------------------------------
+# general settings
+name: NAFNet-HIDE-Style-on-HIDEPSNR
+model_type: ImageRestorationModel
+scale: 1
+num_gpu: 1
+manual_seed: 42
+
+datasets:
+  train:
+    name: hide-train
+    type: PairedImageDataset
+    dataroot_gt: ./datasets/HIDE/train/sharp_crops
+    dataroot_lq: ./datasets/HIDE/train/blur_crops
+
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+    gt_size: 256
+    use_flip: true
+    use_rot: true
+
+    # data loader
+    use_shuffle: true
+    num_worker_per_gpu: 4
+    batch_size_per_gpu: 4
+    dataset_enlarge_ratio: 1
+    prefetch_mode: ~
+
+  val:
+    name: hide-test
+    type: PairedImageDataset
+    dataroot_gt: ./datasets/HIDE/test/target
+    dataroot_lq: ./datasets/HIDE/test/input
+    io_backend:
+      type: disk
+
+
+network_g:
+  type: NAFNetLocal
+  width: 32
+  enc_blk_nums: [1, 1, 1, 28]
+  middle_blk_num: 1
+  dec_blk_nums: [1, 1, 1, 1]
+
+# path
+path:
+  pretrain_network_g : experiments/NAFNet-HIDE-width32/models/net_g_300000.pth
+  strict_load_g: true
+  resume_state: ~
+
+# training settings
+train:
+  accumulation_steps: 8 # 8x smaller batch size due to memory issues, so need to accumulate gradients 8 times
+  optim_g:
+    type: AdamW
+    lr: !!float 1e-3
+    weight_decay: !!float 1e-3
+    betas: [0.9, 0.9]
+
+  scheduler:
+    type: TrueCosineAnnealingLR
+    T_max: 220000 # 200000 originally, but had to incresae 8x due to 8x smaller batch size plus added extra 100 k    
+    eta_min: !!float 1e-4
+
+  total_iter: 220000 # 200000 originally, but had to incresae 8x due to 8x smaller batch size plus added extra 100 k
+  warmup_iter: -1 # no warm up
+
+  # losses
+  pixel_opt:
+    type: PerceptualLoss
+    loss_weight: 1
+    perceptual_weight : 0.0
+    style_weight : 1.0
+
+# validation settings
+val:
+  val_freq: !!float 1e4
+  save_img: false
+
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: false
+    ssim:
+      type: calculate_ssim
+      crop_border: 0
+      test_y_channel: false
+    lpips:
+      type: calculate_lpips
+      crop_border: 0
+      test_y_channel: false
+    #niqe:
+      #type: calculate_niqe
+      #crop_border: 0
+
+# logging settings
+logger:
+  print_freq: 200
+  save_checkpoint_freq: !!float 5e3
+  use_tb_logger: true
+  wandb:
+    project: ~
+    resume_id: ~
+
+# dist training settings
+dist_params:
+  backend: nccl
+  port: 29500
