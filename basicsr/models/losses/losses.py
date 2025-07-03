@@ -268,29 +268,29 @@ class PerceptualLoss(nn.Module):
 
         return total_loss
 
-def _gram_mat(self, x):
-    """
-    Calculate the Gram matrix of input feature maps.
+    def _gram_mat(self, x):
+        """
+        Calculate the Gram matrix of input feature maps.
 
-    The Gram matrix is used to measure the correlations between the different
-    feature channels. It is commonly used in style loss computations.
+        The Gram matrix is used to measure the correlations between the different
+        feature channels. It is commonly used in style loss computations.
 
-    Args:
-        x (torch.Tensor): Feature maps with shape (n, c, h, w), where
+        Args:
+            x (torch.Tensor): Feature maps with shape (n, c, h, w), where
             n = batch size,
             c = number of channels,
             h = height,
             w = width.
 
-    Returns:
+        Returns:
         torch.Tensor: Gram matrix of shape (n, c, c), normalized by the
-            number of elements (c * h * w).
-    """
-    n, c, h, w = x.size()
-    # Reshape to (n, c, h*w) to treat each feature map as a vector
-    features = x.view(n, c, h * w)
-    # Transpose features to (n, h*w, c) for batch matrix multiplication
-    features_t = features.transpose(1, 2)
-    # Compute batch matrix multiplication of features and its transpose
-    gram = features.bmm(features_t) / (c * h * w)  # Normalize by total elements
-    return gram
+        number of elements (c * h * w).
+        """
+        n, c, h, w = x.size()
+        # Reshape to (n, c, h*w) to treat each feature map as a vector
+        features = x.view(n, c, h * w)
+        # Transpose features to (n, h*w, c) for batch matrix multiplication
+        features_t = features.transpose(1, 2)
+        # Compute batch matrix multiplication of features and its transpose
+        gram = features.bmm(features_t) / (c * h * w)  # Normalize by total elements
+        return gram
