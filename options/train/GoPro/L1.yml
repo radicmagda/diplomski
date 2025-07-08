@@ -66,10 +66,10 @@ train:
 
   scheduler:
     type: TrueCosineAnnealingLR
-    T_max: 220000 # 200000 originally, but had to incresae 8x due to 8x smaller batch size plus added extra 100 k    
+    T_max: 260000 # 200000 originally, but had to incresae 8x due to 8x smaller batch size plus added extra 100 k    
     eta_min: !!float 1e-4
 
-  total_iter: 220000 # 200000 originally, but had to incresae 8x due to 8x smaller batch size plus added extra 100 k
+  total_iter: 260000 # 200000 originally, but had to incresae 8x due to 8x smaller batch size plus added extra 100 k
   warmup_iter: -1 # no warm up
 
   # losses
