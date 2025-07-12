@@ -131,9 +131,9 @@ class PSNRLoss(nn.Module):
 
 class DWTLoss(nn.Module):
     def __init__(self, loss_weight=1.0,
-                 reduction='mean', 
-                 wave='haar', 
-                 level=1, 
+                 reduction='mean',
+                 wave='haar',
+                 level=1,
                  loss_fn=nn.L1Loss()):
         super().__init__()
         self.dwt = DWTForward(J=level, wave=wave, mode='zero')  # zero padding, can change to 'symmetric'
@@ -210,7 +210,7 @@ class PerceptualLoss(nn.Module):
             vgg_type=vgg_type,
             use_input_norm=use_input_norm,
             range_norm=range_norm)
-        
+
         self.vgg.eval()
         for param in self.vgg.parameters():
             param.requires_grad = False
@@ -277,14 +277,14 @@ class PerceptualLoss(nn.Module):
 
         Args:
             x (torch.Tensor): Feature maps with shape (n, c, h, w), where
-            n = batch size,
-            c = number of channels,
-            h = height,
-            w = width.
+                n = batch size,
+                c = number of channels,
+                h = height,
+                w = width.
 
         Returns:
-        torch.Tensor: Gram matrix of shape (n, c, c), normalized by the
-        number of elements (c * h * w).
+            torch.Tensor: Gram matrix of shape (n, c, c), normalized by the
+                number of elements (c * h * w).
         """
         n, c, h, w = x.size()
         # Reshape to (n, c, h*w) to treat each feature map as a vector
